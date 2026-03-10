@@ -36,7 +36,7 @@ const Boss = {
     const opt = choice === 'Y' ? bq.Y : bq.N;
 
     // Disable buttons during resolution
-    $('boss-opts').innerHTML = '<div style="font-size:8px;color:var(--dim)">RESOLVING...</div>';
+    $('boss-opts').innerHTML = '<div style="font-size:10px;color:var(--dim)">RESOLVING...</div>';
 
     // Win chance influenced by luck + cards
     const baseChance = 40 + p.luck * 3 + (p.wcb || 0);

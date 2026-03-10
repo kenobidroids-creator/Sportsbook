@@ -17,7 +17,7 @@ const Render = {
     $(targetId).innerHTML = `
       <div class="hud-stat gold">💰 <span class="v">${fmt(p.bankroll)}</span></div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
-        <div style="font-size:6px;color:var(--dim)">LVL ${p.lvl}/10</div>
+        <div style="font-size:9px;color:var(--dim)">LVL ${p.lvl}/10</div>
         <div class="level-pip-row">${pips}</div>
       </div>
       <div style="display:flex;gap:6px;">
@@ -37,7 +37,7 @@ const Render = {
           <div class="cstat-bar">
             <div class="cstat-fill" style="width:${sv * 10}%;background:${a.statColors[sn]}"></div>
           </div>
-          <div style="font-size:6px;color:${a.statColors[sn]};width:18px;text-align:right">${sv}</div>
+          <div style="font-size:9px;color:${a.statColors[sn]};width:22px;text-align:right">${sv}</div>
         </div>`).join('');
 
       const c = document.createElement('div');
@@ -182,7 +182,7 @@ const Render = {
     el.innerHTML = '';
 
     if (!items.length) {
-      el.innerHTML = '<div style="font-size:7px;color:var(--dim);padding:8px">— SOLD OUT —</div>';
+      el.innerHTML = '<div style="font-size:10px;color:var(--dim);padding:8px">— SOLD OUT —</div>';
       return;
     }
 
@@ -202,7 +202,7 @@ const Render = {
         <div class="sname">${data.n}</div>
         <div class="sdesc">${data.desc}</div>
         <div class="sprice">${sold ? 'SOLD' : data.cost === 0 ? 'FREE' : fmt(data.cost)}</div>
-        ${full ? '<div style="font-size:5px;color:var(--red);margin-top:2px">JOKER SLOTS FULL</div>' : ''}`;
+        ${full ? '<div style="font-size:9px;color:var(--red);margin-top:3px">JOKER SLOTS FULL</div>' : ''}`;
 
       if (!sold && !broke && !full) {
         d.onclick = () => G.buyItem(type, id, idx);
