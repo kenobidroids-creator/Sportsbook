@@ -195,6 +195,11 @@ const G = {
     Render.updateWager(this);
     Render.hand(this, 'hand-scroll');
 
+    // Scroll the wager panel into view so the user sees it immediately
+    setTimeout(() => {
+      $('wager-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+
     // Inside Man joker: auto-reveal on first bet
     if (p.jokers.includes('inside_man') && p.ril === 0 && !p._insideManUsed) {
       p._insideManUsed = true;
