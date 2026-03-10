@@ -219,20 +219,35 @@ const G = {
 
   playCard(i) {
     const p = this.p;
-    // Deselect if same card tapped again
+
+    // Deselect if same card tapped again — no effect has fired yet, safe to cancel
     if (p.playedCard === i) {
       p.playedCard = null;
       Render.hand(this, 'hand-scroll');
+      Render.updateWager(this);
+      showToast('Card deselected.', 'ti');
       return;
     }
     if (p.playedCard !== null) {
       showToast("Only 1 card per round!", 'tl');
       return;
     }
+
     SFX.click();
     p.playedCard = i;
-    const msg = CARDS[p.hand[i]].apply(this);
-    showToast(`${CARDS[p.hand[i]].ico} ${msg}`, 'ti');
+    const card = CARDS[p.hand[i]];
+
+    // inside_info is the one card that's useful to preview immediately
+    // (it just sets a flag + shows odds — no stacking side-effect)
+    if (p.hand[i] === 'inside_info') {
+      p.iia = true;
+      const ch = calcChance(this);
+      showToast(`${card.ico} Intel: true odds are ${ch}%`, 'ti');
+    } else {
+      // All other cards: just show what WILL happen — apply() fires at placeBet
+      showToast(`${card.ico} ${card.n} staged — fires when you place bet`, 'ti');
+    }
+
     Render.hand(this, 'hand-scroll');
     Render.updateWager(this);
   },
@@ -245,13 +260,19 @@ const G = {
     }
     SFX.click();
 
-    // Consume played card from hand
+    // Apply the staged card effect NOW (exactly once, right before the bet locks in)
     if (p.playedCard !== null) {
+      const card = CARDS[p.hand[p.playedCard]];
+      if (card && p.hand[p.playedCard] !== 'inside_info') {
+        // inside_info already applied its flag above; skip re-applying
+        const msg = card.apply(this);
+        showToast(`${card.ico} ${msg}`, 'ti');
+      }
       p.hand.splice(p.playedCard, 1);
       p.playedCard = null;
     }
 
-    // Deduct wager now (returned on push/win)
+    // Deduct wager (returned on push/win)
     p.bankroll -= p.wager;
     Sim.run(this);
   },

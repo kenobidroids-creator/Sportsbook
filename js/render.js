@@ -128,15 +128,34 @@ const Render = {
     const p = G.p;
     $('wnum').textContent = fmt(p.wager);
     if (p.bet) {
-      const ch = calcChance(G);
-      const pm = p.pm || 1;
-      const grudge = p.jokers.includes('bookies_grudge') && p.bet.odds >= 4 ? 2 : 1;
-      const winAmt = Math.floor(p.wager * p.bet.odds * pm * grudge);
+      // Base chance from jokers/luck (cards not applied yet)
+      const baseChance = calcChance(G);
+
+      // Preview: what will chance be WITH the staged card?
+      let previewChance = baseChance;
+      let previewPm = p.pm || 1;
+      if (p.playedCard !== null) {
+        const cid = p.hand[p.playedCard];
+        if (cid === 'bluff')      previewChance += 25;
+        if (cid === 'sure_thing') previewChance += 20;
+        if (cid === 'big_brain' && (p.bet.risk === 'HIGH' || p.bet.risk === 'EXTREME')) previewChance += 15;
+        if (cid === 'bribe')      previewChance += 30;
+        if (cid === 'parlay_slip' || cid === 'free_parlay') previewPm *= 1.5;
+      }
+      previewChance = Math.min(95, Math.max(5, Math.round(previewChance)));
+
+      const grudge  = p.jokers.includes('bookies_grudge') && p.bet.odds >= 4 ? 2 : 1;
+      const winAmt  = Math.floor(p.wager * p.bet.odds * previewPm * grudge);
       const showOdds = p.bet.risk === 'UNKNOWN' && !p.iia;
+      const hasBonus = previewChance !== baseChance;
 
       $('pv-win').textContent  = `+${fmt(winAmt)}`;
       $('pv-lose').textContent = `-${fmt(p.wager)}`;
-      $('pv-ch').textContent   = showOdds ? '???%' : `${ch}%`;
+      $('pv-ch').textContent   = showOdds
+        ? '???%'
+        : hasBonus
+          ? `${baseChance}% → ${previewChance}%`
+          : `${baseChance}%`;
     }
   },
 
