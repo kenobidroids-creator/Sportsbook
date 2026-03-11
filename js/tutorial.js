@@ -672,6 +672,9 @@ const Tutorial = {
 };
 
 // ── BOOT ─────────────────────────────────────────────
+// Shows first-run prompt if 'tsats_tutorialDone' is not in localStorage.
+// To re-trigger during testing: localStorage.removeItem('tsats_tutorialDone')
+// Or call: Tutorial.replay()
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => Tutorial.boot(), 200);
 });
