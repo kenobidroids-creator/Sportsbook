@@ -20,9 +20,10 @@ const Render = {
         <div style="font-size:9px;color:var(--dim)">LVL ${p.lvl}/10</div>
         <div class="level-pip-row">${pips}</div>
       </div>
-      <div style="display:flex;gap:6px;">
+      <div style="display:flex;gap:6px;align-items:center;">
         <div class="hud-stat purple">🍀<span class="v">${p.luck}</span></div>
         <div class="hud-stat red">🌡️<span class="v">${p.heat}</span></div>
+        <button class="help-btn" onclick="Help.open()" title="How to Play (? or F1)">?</button>
       </div>`;
   },
 
