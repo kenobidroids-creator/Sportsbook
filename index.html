@@ -995,7 +995,10 @@ body::after {
 
     <div class="help-titlebar">
       <div class="help-title">📖 HOW TO PLAY</div>
-      <button class="help-close" onclick="Help.close()">✕ CLOSE</button>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+        <button class="tut-replay-help" onclick="Tutorial.replay()">🎓 REPLAY TUTORIAL</button>
+        <button class="help-close" onclick="Help.close()">✕ CLOSE</button>
+      </div>
     </div>
 
     <div class="help-tabs">
@@ -1211,6 +1214,7 @@ body::after {
 <script src="js/boss.js"></script>
 <script src="js/game.js"></script>
 <script src="js/help.js"></script>
+<script src="js/tutorial.js"></script>
 
 </body>
 </html>
