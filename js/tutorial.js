@@ -326,7 +326,26 @@ const Tutorial = {
     document.body.classList.remove('tut-active');
     this._clearUnlocks();
     this._teardownOverlay();
-    this._restoreGameMethods(); // restore BEFORE restart so real game uses originals
+    this._restoreGameMethods();
+    // Hard-reset any inline styles the tutorial may have forced onto game elements
+    // so the real game starts with a completely clean slate
+    const placBtn = document.getElementById('place-btn');
+    if (placBtn) {
+      placBtn.style.removeProperty('pointer-events');
+      placBtn.style.removeProperty('opacity');
+      placBtn.style.removeProperty('filter');
+    }
+    const confirmBtn = document.getElementById('confirm-btn');
+    if (confirmBtn) {
+      confirmBtn.style.removeProperty('pointer-events');
+      confirmBtn.style.removeProperty('opacity');
+      confirmBtn.style.removeProperty('filter');
+    }
+    // Restore scroll on any locked scroll containers
+    clearTimeout(this._scrollLockTimer);
+    document.querySelectorAll('.scroll-body').forEach(el => {
+      el.style.removeProperty('overflow');
+    });
     G.restart();
   },
 
@@ -490,7 +509,10 @@ const Tutorial = {
       if (scrollParent) {
         scrollParent.style.overflow = 'auto';
         targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        setTimeout(() => { scrollParent.style.overflow = 'hidden'; }, 600);
+        clearTimeout(this._scrollLockTimer);
+        this._scrollLockTimer = setTimeout(() => {
+          if (this.active) scrollParent.style.overflow = 'hidden';
+        }, 600);
       }
     } catch(e) {}
 
@@ -530,8 +552,9 @@ const Tutorial = {
     T._origMethods.nav = G.nav.bind(G);
     G.nav = function(s) {
       T._origMethods.nav(s);
+      // Only advance if tutorial is genuinely active at step 1
       if (T.active && T.step === 1 && s === 'charselect') {
-        setTimeout(() => T.next(), 100);
+        setTimeout(() => { if (T.active) T.next(); }, 100);
       }
     };
 
