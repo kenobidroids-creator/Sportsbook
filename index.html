@@ -344,8 +344,12 @@ body::after {
 /* Wager panel */
 .wager-panel {
   background: var(--bg2); border: 1px solid var(--border);
-  padding: 12px 10px; margin-bottom: 10px;
+  padding: 12px 10px; margin-bottom: 0;
   display: flex; flex-direction: column; gap: 9px;
+}
+#wager-panel {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
 }
 .wager-top {
   display: flex; align-items: center; justify-content: space-between;
@@ -385,9 +389,10 @@ body::after {
   display: flex; flex-direction: column; gap: 5px; align-items: center;
   clip-path: polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
   transition: border-color .15s, transform .15s, box-shadow .15s;
+  min-height: 90px;
 }
-.hcard:hover  { border-color: var(--pink); transform: translateY(-5px); box-shadow: 0 6px 14px rgba(255,45,120,.22); }
-.hcard.active { border-color: var(--green); background: rgba(0,230,118,.04); transform: translateY(-7px); box-shadow: 0 8px 18px rgba(0,230,118,.22); }
+.hcard:hover  { border-color: var(--pink); transform: translateY(-3px); box-shadow: 0 6px 14px rgba(255,45,120,.22); }
+.hcard.active { border-color: var(--green); background: rgba(0,230,118,.04); transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,230,118,.22); }
 .hcico    { font-size: 20px; }
 .hcname   { font-size: 9px; color: var(--dim); text-align: center; line-height: 1.6; }
 .hcfx     { font-size: 9px; color: var(--pink); text-align: center; line-height: 1.6; }
@@ -631,6 +636,124 @@ body::after {
 .srow .sv { color: var(--text); }
 
 /* ══════════════════════════════════════════════
+   HELP MODAL
+══════════════════════════════════════════════ */
+#help-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 8000;
+  background: rgba(2, 6, 14, .92);
+  backdrop-filter: blur(6px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 16px;
+  overflow: hidden;
+}
+#help-overlay.open { display: flex; }
+
+.help-modal {
+  background: var(--bg2);
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 40px rgba(0,229,255,.2), inset 0 0 30px rgba(0,229,255,.03);
+  width: 100%; max-width: 680px;
+  display: flex; flex-direction: column;
+  max-height: calc(100vh - 32px);
+  clip-path: polygon(12px 0%,calc(100% - 12px) 0%,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0% calc(100% - 12px),0% 12px);
+}
+.help-titlebar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; flex-shrink: 0;
+  border-bottom: 2px solid var(--border);
+  background: linear-gradient(135deg, rgba(0,229,255,.08), transparent);
+}
+.help-title {
+  font-size: clamp(11px, 3vw, 14px);
+  color: var(--cyan); text-shadow: 0 0 14px var(--cyan); letter-spacing: 3px;
+}
+.help-close {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); font-family: 'Press Start 2P', monospace;
+  font-size: 10px; padding: 6px 12px; cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.help-close:hover { border-color: var(--pink); color: var(--pink); }
+.help-tabs {
+  display: flex; gap: 0; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.help-tabs::-webkit-scrollbar { display: none; }
+.htab {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(7px, 1.6vw, 9px);
+  color: var(--dim); background: transparent;
+  border: none; border-bottom: 3px solid transparent;
+  padding: 11px 14px; cursor: pointer; white-space: nowrap;
+  transition: color .15s, border-color .15s; flex-shrink: 0;
+}
+.htab:hover  { color: var(--text); }
+.htab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.help-body {
+  flex: 1; overflow-y: auto; padding: 18px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.help-body::-webkit-scrollbar { width: 3px; }
+.help-body::-webkit-scrollbar-thumb { background: var(--border); }
+.hpanel { display: none; flex-direction: column; gap: 14px; }
+.hpanel.active { display: flex; }
+.hh {
+  font-size: clamp(9px, 2vw, 11px); color: var(--gold);
+  letter-spacing: 2px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+.hp {
+  font-size: clamp(9px, 1.8vw, 10px); color: var(--dim);
+  line-height: 2.2; font-family: 'Share Tech Mono', monospace;
+}
+.hp strong { color: var(--text); font-family: 'Share Tech Mono', monospace; }
+.hp em     { color: var(--cyan); font-style: normal; }
+.htable {
+  width: 100%; border-collapse: collapse;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.7vw, 10px);
+}
+.htable th {
+  text-align: left; color: var(--cyan); padding: 6px 10px;
+  border-bottom: 1px solid var(--border); font-size: 9px; letter-spacing: 1px;
+}
+.htable td {
+  padding: 7px 10px; color: var(--dim);
+  border-bottom: 1px solid rgba(30,53,80,.5); vertical-align: top;
+}
+.htable td:first-child { color: var(--text); white-space: nowrap; }
+.htable tr:hover td { background: rgba(0,229,255,.03); }
+.htip {
+  background: rgba(0,229,255,.05); border-left: 3px solid var(--cyan);
+  padding: 10px 14px; font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.7vw, 10px); color: var(--dim); line-height: 2;
+}
+.htip strong { color: var(--cyan); }
+.hwarn {
+  background: rgba(255,23,68,.06); border-left: 3px solid var(--red);
+  padding: 10px 14px; font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.7vw, 10px); color: var(--dim); line-height: 2;
+}
+.hwarn strong { color: var(--red); }
+.hgold {
+  background: rgba(255,196,0,.06); border-left: 3px solid var(--gold);
+  padding: 10px 14px; font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.7vw, 10px); color: var(--dim); line-height: 2;
+}
+.hgold strong { color: var(--gold); }
+.help-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--dim); font-family: 'Press Start 2P', monospace;
+  font-size: 10px; width: 28px; height: 28px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .15s, color .15s; flex-shrink: 0;
+}
+.help-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ══════════════════════════════════════════════
    RESPONSIVE OVERRIDES
 ══════════════════════════════════════════════ */
 @media (min-width: 640px) {
@@ -666,6 +789,7 @@ body::after {
     BEAT THE BOOKIE. BEAT THE HOUSE.
   </div>
   <button class="btn btn-cyan" onclick="G.nav('charselect')">▶ PLACE YOUR BETS</button>
+  <button class="btn btn-ghost" onclick="Help.open()" style="font-size:10px">📖 HOW TO PLAY</button>
   <div class="title-ver">MVP v0.1 · Built for Godot portability</div>
 </div>
 
@@ -700,31 +824,31 @@ body::after {
       <div class="interest-note" id="int-note" style="display:none"></div>
       <div class="sec">◆ SELECT YOUR BET</div>
       <div class="bet-grid" id="bet-grid"></div>
+    </div>
+  </div>
 
-      <!-- Wager panel (shown after bet selected) -->
-      <div id="wager-panel" style="display:none">
-        <div class="wager-panel">
-          <div class="sec" style="margin-bottom:0">◆ SET WAGER</div>
-          <div class="wager-top">
-            <div>
-              <div style="font-size:9px;color:var(--dim);margin-bottom:2px">WAGERING</div>
-              <div class="wager-num" id="wnum">$25</div>
-            </div>
-            <div class="wager-btns">
-              <button class="btn btn-ghost btn-sm" onclick="G.aw(-10)">−10</button>
-              <button class="btn btn-ghost btn-sm" onclick="G.aw(-5)">−5</button>
-              <button class="btn btn-ghost btn-sm" onclick="G.aw(5)">+5</button>
-              <button class="btn btn-ghost btn-sm" onclick="G.aw(10)">+10</button>
-              <button class="btn btn-gold btn-sm"  onclick="G.aw('half')">½</button>
-              <button class="btn btn-gold btn-sm"  onclick="G.aw('max')">MAX</button>
-            </div>
-          </div>
-          <div class="payout-preview">
-            WIN: <span class="pv-win" id="pv-win">$0</span>
-            &nbsp;&nbsp;LOSE: <span class="pv-lose" id="pv-lose">$0</span>
-            &nbsp;&nbsp;CHANCE: <span class="pv-ch" id="pv-ch">?</span>
-          </div>
+  <!-- Wager panel — pinned above hand, outside scroll so cards can't push it off screen -->
+  <div id="wager-panel" style="display:none">
+    <div class="wager-panel">
+      <div class="sec" style="margin-bottom:0">◆ SET WAGER</div>
+      <div class="wager-top">
+        <div>
+          <div style="font-size:9px;color:var(--dim);margin-bottom:2px">WAGERING</div>
+          <div class="wager-num" id="wnum">$25</div>
         </div>
+        <div class="wager-btns">
+          <button class="btn btn-ghost btn-sm" onclick="G.aw(-10)">−10</button>
+          <button class="btn btn-ghost btn-sm" onclick="G.aw(-5)">−5</button>
+          <button class="btn btn-ghost btn-sm" onclick="G.aw(5)">+5</button>
+          <button class="btn btn-ghost btn-sm" onclick="G.aw(10)">+10</button>
+          <button class="btn btn-gold btn-sm"  onclick="G.aw('half')">½</button>
+          <button class="btn btn-gold btn-sm"  onclick="G.aw('max')">MAX</button>
+        </div>
+      </div>
+      <div class="payout-preview">
+        WIN: <span class="pv-win" id="pv-win">$0</span>
+        &nbsp;&nbsp;LOSE: <span class="pv-lose" id="pv-lose">$0</span>
+        &nbsp;&nbsp;CHANCE: <span class="pv-ch" id="pv-ch">?</span>
       </div>
     </div>
   </div>
@@ -865,6 +989,219 @@ body::after {
   <button class="btn btn-cyan" onclick="G.restart()">🏆 PLAY AGAIN</button>
 </div>
 
+<!-- ══════════════ HELP MODAL ══════════════ -->
+<div id="help-overlay">
+  <div class="help-modal">
+
+    <div class="help-titlebar">
+      <div class="help-title">📖 HOW TO PLAY</div>
+      <button class="help-close" onclick="Help.close()">✕ CLOSE</button>
+    </div>
+
+    <div class="help-tabs">
+      <button class="htab active" onclick="Help.tab('overview')">THE LOOP</button>
+      <button class="htab" onclick="Help.tab('ante')">ANTE &amp; HEAT</button>
+      <button class="htab" onclick="Help.tab('archetypes')">ARCHETYPES</button>
+      <button class="htab" onclick="Help.tab('cards')">CARDS</button>
+      <button class="htab" onclick="Help.tab('jokers')">JOKERS</button>
+      <button class="htab" onclick="Help.tab('strategy')">STRATEGY</button>
+      <button class="htab" onclick="Help.tab('boss')">BOSSES</button>
+    </div>
+
+    <div class="help-body">
+
+      <!-- ── THE LOOP ── -->
+      <div class="hpanel active" id="hp-overview">
+        <div class="hh">🎲 THE CORE LOOP</div>
+        <div class="hp">A run is <strong>10 levels</strong>. Each level has <strong>3 rounds</strong>. After every level you visit the <strong>Underground Shop</strong>. Beat the Big Bookie at level 10 to win.</div>
+
+        <div class="hh">EACH ROUND</div>
+        <table class="htable">
+          <tr><th>#</th><th>STEP</th><th>WHAT HAPPENS</th></tr>
+          <tr><td>1</td><td>Pick a bet</td><td>Choose from 6 randomly generated events. Each has odds, a win %, and a risk tier.</td></tr>
+          <tr><td>2</td><td>Set wager</td><td>How much of your bankroll to risk. Win % × odds = expected value.</td></tr>
+          <tr><td>3</td><td>Stage a card</td><td>Optional. Tap a card from your hand. It fires when you confirm the bet — not before.</td></tr>
+          <tr><td>4</td><td>Place bet</td><td>Card fires, wager deducted, simulation runs.</td></tr>
+          <tr><td>5</td><td>Payout</td><td>WIN: wager × odds returned. LOSS: wager gone. PUSH: wager returned, no profit.</td></tr>
+        </table>
+
+        <div class="hh">RISK TIERS</div>
+        <table class="htable">
+          <tr><th>TIER</th><th>TYPICAL WIN %</th><th>TYPICAL ODDS</th></tr>
+          <tr><td style="color:var(--green)">LOW</td><td>50–65%</td><td>1.2× – 2.5×</td></tr>
+          <tr><td style="color:var(--gold)">MED</td><td>30–45%</td><td>2.5× – 3.5×</td></tr>
+          <tr><td style="color:var(--orange)">HIGH</td><td>15–28%</td><td>3.5× – 6×</td></tr>
+          <tr><td style="color:var(--red)">EXTREME</td><td>8–15%</td><td>6× – 10×</td></tr>
+          <tr><td style="color:var(--purple)">UNKNOWN</td><td>Hidden</td><td>Hidden</td></tr>
+          <tr><td style="color:var(--pink)">DIGNITY</td><td>~65%</td><td>1.2×</td></tr>
+        </table>
+
+        <div class="htip"><strong>WIN CHANCE shown is your real calculated chance</strong> — it includes your Luck stat, joker bonuses, and any staged card preview. It is not the raw event probability.</div>
+
+        <div class="hh">💰 INTEREST (FREE MONEY)</div>
+        <div class="hp">At the start of every round you earn passive interest based on your current bankroll. <strong>You do not need to do anything to earn it.</strong></div>
+        <table class="htable">
+          <tr><th>BANKROLL</th><th>INTEREST / ROUND</th></tr>
+          <tr><td>$50+</td><td>+$3</td></tr>
+          <tr><td>$150+</td><td>+$6</td></tr>
+          <tr><td>$300+</td><td>+$12</td></tr>
+          <tr><td>$600+</td><td>+$22</td></tr>
+          <tr><td>$1,000+</td><td>+$35</td></tr>
+        </table>
+        <div class="hgold"><strong>Loan Shark joker</strong> doubles interest when you hold $200+. Pair with a large bankroll for passive income of $44–$70 per round.</div>
+      </div>
+
+      <!-- ── ANTE & HEAT ── -->
+      <div class="hpanel" id="hp-ante">
+        <div class="hh">🎯 THE ANTE — LEVEL TARGETS</div>
+        <div class="hp">Each level has a <strong>minimum bankroll target</strong> you must hit by the end of round 3. Miss it and a <strong>goon visits</strong> before the shop.</div>
+        <table class="htable">
+          <tr><th>LEVEL</th><th>TARGET</th><th>LEVEL</th><th>TARGET</th></tr>
+          <tr><td>1</td><td style="color:var(--gold)">$100</td><td>6</td><td style="color:var(--gold)">$630</td></tr>
+          <tr><td>2</td><td style="color:var(--gold)">$175</td><td>7</td><td style="color:var(--gold)">$920</td></tr>
+          <tr><td>3</td><td style="color:var(--gold)">$280</td><td>8</td><td style="color:var(--gold)">$1,300</td></tr>
+          <tr><td>4</td><td style="color:var(--gold)">$420</td><td>9</td><td style="color:var(--gold)">$1,900</td></tr>
+          <tr><td>5</td><td style="color:var(--pink)">BOSS FIGHT</td><td>10</td><td style="color:var(--pink)">BOSS FIGHT</td></tr>
+        </table>
+        <div class="hwarn"><strong>Targets grow exponentially.</strong> You cannot coast on safe LOW bets alone past level 4. Joker synergies and multipliers are how you bridge the gap.</div>
+
+        <div class="hh">🌡️ THE HEAT METER</div>
+        <div class="hp">Every <strong>loss adds +10 Heat</strong>. Every win removes −5. At <strong>70+ Heat</strong> there is a 55% chance a goon visits after each payout — even if you met the ante.</div>
+        <table class="htable">
+          <tr><th>HEAT</th><th>STATUS</th></tr>
+          <tr><td>0 – 40</td><td style="color:var(--green)">Safe</td></tr>
+          <tr><td>41 – 69</td><td style="color:var(--gold)">Elevated — watch it</td></tr>
+          <tr><td>70+</td><td style="color:var(--red)">Goon risk on every result</td></tr>
+        </table>
+
+        <div class="hh">💪 THE GOONS</div>
+        <table class="htable">
+          <tr><th>GOON</th><th>CONSEQUENCE</th></tr>
+          <tr><td>TINY</td><td>Takes your best card from hand</td></tr>
+          <tr><td>REPO-WIZARD</td><td>Removes a random joker</td></tr>
+          <tr><td>KNUCKLES</td><td>Takes 20% of your bankroll (min $15)</td></tr>
+          <tr><td>THE ACCOUNTANT</td><td>Shop rerolls cost +$10 permanently</td></tr>
+          <tr><td>CLOWN SHOES</td><td>+30 Heat, next win chance −15%</td></tr>
+        </table>
+        <div class="htip"><strong>Accepting the goon reduces Heat by −20.</strong> A goon visit hurts, but it does reset some heat pressure.</div>
+      </div>
+
+      <!-- ── ARCHETYPES ── -->
+      <div class="hpanel" id="hp-archetypes">
+        <div class="hh">🎰 THE DEGENERATE</div>
+        <div class="hp">Start: <strong style="color:var(--gold)">$75</strong> · Luck: <strong style="color:var(--purple)">1/10</strong> · Perk: Free Parlay each level</div>
+        <div class="hwarn"><strong>Hardest early game.</strong> $75 vs a $100 ante with Luck 1 is brutal. You rely on the Free Parlay to punch above your weight.</div>
+        <div class="htip"><strong>Strategy:</strong> Play LOW/MED rounds 1–2 to survive. Round 3: use the Free Parlay on a HIGH or EXTREME bet. A 5× bet + 1.5× Parlay = 7.5× effective payout. High variance, high ceiling.</div>
+
+        <div class="hh">🧮 THE MATH WHIZ</div>
+        <div class="hp">Start: <strong style="color:var(--gold)">$300</strong> · Luck: <strong style="color:var(--purple)">4/10</strong> · Perk: Odds Calculator (+5% on LOW/MED bets)</div>
+        <div class="htip"><strong>Best for learning.</strong> Starts with Tipster joker (+5% all bets) and Inside Info card. Odds Calculator reveals true win % permanently on LOW/MED bets.</div>
+        <div class="hgold"><strong>Strategy:</strong> Never bet more than 25% of bankroll. Stack LOW/MED bets with Tipster. Use Inside Info before committing to anything MED or higher.</div>
+
+        <div class="hh">🤞 THE LUCKY IDIOT</div>
+        <div class="hp">Start: <strong style="color:var(--gold)">$100</strong> · Luck: <strong style="color:var(--purple)">10/10</strong> · Perk: Beginner's Luck (wins pay ×1.5–×3.0 randomly)</div>
+        <div class="htip"><strong>Strategy:</strong> Go for HIGH and EXTREME bets. Luck 10 = +7.5% win chance over baseline. The random payout multiplier means a 5× bet that wins could effectively pay 15×. Lucky Socks joker adds +2 more Luck.</div>
+        <div class="hwarn">The Lucky Idiot has the highest single-run ceiling but the widest variance. Feast or famine.</div>
+      </div>
+
+      <!-- ── CARDS ── -->
+      <div class="hpanel" id="hp-cards">
+        <div class="hh">🃏 CARDS — ACTIVE, ONE PER ROUND</div>
+        <div class="hp">Cards sit in your hand and are played by tapping them <strong>before</strong> you place a bet. They fire exactly once when you confirm — not on tap. You can deselect a card before confirming with no penalty.</div>
+        <table class="htable">
+          <tr><th>CARD</th><th>EFFECT</th><th>BEST USED ON</th></tr>
+          <tr><td>⚡ Double Down</td><td>2× wager</td><td>High confidence + spare bankroll</td></tr>
+          <tr><td>🎭 Bluff</td><td>+25% win chance</td><td>MED/HIGH where base % is 30–50</td></tr>
+          <tr><td>✅ Sure Thing</td><td>+20% win, −0.5× odds</td><td>HIGH bets (trade odds for safety)</td></tr>
+          <tr><td>📋 Parlay Slip</td><td>×1.5 payout multiplier</td><td>HIGH/EXTREME only</td></tr>
+          <tr><td>🎫 Free Parlay</td><td>×1.5 payout (free)</td><td>Same as Parlay Slip</td></tr>
+          <tr><td>✋ Pocket Sand</td><td>Loss → Push (wager back)</td><td>Save for big EXTREME swings</td></tr>
+          <tr><td>💵 Cash Out</td><td>Take 40% profit regardless of result</td><td>When you need any positive number</td></tr>
+          <tr><td>🕵️ Inside Info</td><td>Reveals true win %</td><td>Before every MED+ bet</td></tr>
+          <tr><td>💴 Bribe</td><td>−$20, +30% win chance</td><td>When $20 is small vs wager size</td></tr>
+          <tr><td>🌿 The Hedge</td><td>Lose only 50% of wager on loss</td><td>Desperate EXTREME bets</td></tr>
+          <tr><td>🧠 Big Brain</td><td>+15% win on HIGH/EXTREME only</td><td>Hold until you have a HIGH+ bet</td></tr>
+          <tr><td>🍀 Lucky Charm</td><td>+1 Luck permanently</td><td>Early game — permanent value</td></tr>
+        </table>
+        <div class="hwarn"><strong>Pocket Sand and Cash Out are not the same thing.</strong> Pocket Sand turns a loss into a push (wager returned, no profit). Cash Out guarantees 40% profit regardless of outcome — use it when you need cash and can't risk a clean loss.</div>
+      </div>
+
+      <!-- ── JOKERS ── -->
+      <div class="hpanel" id="hp-jokers">
+        <div class="hh">♾️ JOKERS — PASSIVE, MAX 3 EQUIPPED</div>
+        <div class="hp">Jokers are permanent passives equipped in the shop. They tick every round automatically. You can hold up to <strong>3 at once</strong>. Finding synergies between jokers is the core depth of a run.</div>
+        <table class="htable">
+          <tr><th>JOKER</th><th>EFFECT</th></tr>
+          <tr><td>🎩 The Tipster</td><td>+5% win chance on every bet</td></tr>
+          <tr><td>🦈 Loan Shark Pal</td><td>Interest ×2 when bankroll ≥ $200</td></tr>
+          <tr><td>🔧 The Fixer</td><td>Once per level: auto Pocket Sand on a loss</td></tr>
+          <tr><td>🧦 Lucky Socks</td><td>+2 Luck on equip (permanent)</td></tr>
+          <tr><td>🔥 Hot Streak</td><td>+0.5× payout per consecutive win</td></tr>
+          <tr><td>📖 Bookie's Grudge</td><td>Longshot bets (4×+ odds) pay double</td></tr>
+          <tr><td>🥊 Brass Knuckles</td><td>+10% win chance, +20 Heat per loss</td></tr>
+          <tr><td>🎲 Loaded Dice</td><td>All bet odds +0.3×</td></tr>
+          <tr><td>🕶️ Deal Shades</td><td>Heat gains halved</td></tr>
+          <tr><td>🤝 Inside Man</td><td>First bet each level auto-reveals true odds</td></tr>
+        </table>
+
+        <div class="hh">🔗 STRONG SYNERGIES</div>
+        <div class="htip"><strong>The Grinder:</strong> Tipster + Hot Streak + Lucky Socks — play LOW bets to build a win streak, then cash in the streak bonus on a HIGH bet round 3.</div>
+        <div class="hgold"><strong>The Longshot King:</strong> Bookie's Grudge + Hot Streak + Parlay Slips in hand — a 6× bet becomes effectively 18× with grudge doubling, streak bonus, and parlay. One hit clears most antes.</div>
+        <div class="htip"><strong>The Safe House:</strong> Loan Shark + Inside Man + any win% booster — keep bankroll above $200, collect double interest, reveal odds for free each level, bet conservatively.</div>
+        <div class="hwarn"><strong>Danger Build:</strong> Brass Knuckles + Deal Shades = net +10% win, +10 Heat per loss instead of +20. The win boost is significant but heat will eventually catch up. Don't skip wins.</div>
+      </div>
+
+      <!-- ── STRATEGY ── -->
+      <div class="hpanel" id="hp-strategy">
+        <div class="hh">💡 GENERAL PRINCIPLES</div>
+        <div class="htip"><strong>Bankroll management matters more than win rate.</strong> Losing 50% of your bankroll on one bet is catastrophic. Losing 10% three times in a row is survivable.</div>
+        <div class="hgold"><strong>The shop reroll cost scales up.</strong> Don't reroll more than twice per shop unless you desperately need a specific joker. The Accountant goon makes this even worse.</div>
+        <div class="htip"><strong>Cards are not disposable.</strong> Playing a card removes it from your hand. Hold Pocket Sand and The Hedge for the rounds you actually need them.</div>
+        <div class="hwarn"><strong>High Heat is a death spiral.</strong> Goons strip your tools. Stripped tools lower your win %. Lower win rate means more losses. More losses = more Heat. Keep Heat under 60.</div>
+
+        <div class="hh">📊 BETTING SIZING GUIDE</div>
+        <table class="htable">
+          <tr><th>SITUATION</th><th>RECOMMENDED BET SIZE</th></tr>
+          <tr><td>Comfortable, ahead of ante</td><td>15–25% of bankroll</td></tr>
+          <tr><td>At ante target, round 3</td><td>MIN — just survive</td></tr>
+          <tr><td>Below ante target, round 3</td><td>You must swing — 40–60% with a card</td></tr>
+          <tr><td>EXTREME bet</td><td>5–15% max unless you have Pocket Sand</td></tr>
+          <tr><td>After a goon visit</td><td>Play small — rebuild before swinging</td></tr>
+        </table>
+
+        <div class="hh">🔁 LEVEL 1 SURVIVAL</div>
+        <div class="hp">The hardest ante to hit is level 1 ($100). Start bankrolls are $75–$300 depending on archetype. <strong>Math Whiz is trivially safe. Degenerate is tight.</strong></div>
+        <div class="htip">As Degenerate with $75: bet $20 on LOW round 1 (60%+ win), $20 on LOW round 2, then dump remaining + Free Parlay on a MED+ bet round 3. If both LOW bets win you'll have ~$110–$120 heading into round 3.</div>
+      </div>
+
+      <!-- ── BOSSES ── -->
+      <div class="hpanel" id="hp-boss">
+        <div class="hh">👺 BOSS FIGHT — LEVELS 5 &amp; 10</div>
+        <div class="hp">Boss fights replace the normal betting round. Instead of picking a sporting event, the boss asks you <strong>absurd yes/no questions</strong> — you bet on the answer. 4–5 rounds, HP bars for both sides.</div>
+
+        <div class="hh">HOW IT WORKS</div>
+        <table class="htable">
+          <tr><th></th><th>PLAYER WINS ROUND</th><th>BOSS WINS ROUND</th></tr>
+          <tr><td>HP effect</td><td>Boss takes damage</td><td>Player takes damage</td></tr>
+          <tr><td>Cash effect</td><td>Win based on chosen odds</td><td>Lose 50% of boss wager</td></tr>
+          <tr><td>Wager size</td><td colspan="2">Auto-set to 10% of bankroll</td></tr>
+        </table>
+        <div class="hp">Your base win chance per boss round is: <em>40% + (Luck × 3%) + card bonuses</em>. At Luck 10 that's 70% base — the Lucky Idiot is actually the best boss fighter.</div>
+
+        <div class="hh">BOSS REWARDS</div>
+        <table class="htable">
+          <tr><th>BOSS</th><th>REWARD ON WIN</th><th>PENALTY ON LOSE</th></tr>
+          <tr><td>👺 Bookie Junior (Lvl 5)</td><td>+$200 · Bluff card</td><td>−30% bankroll</td></tr>
+          <tr><td>👹 The Big Bookie (Lvl 10)</td><td>+$600 · Loaded Dice joker · YOU WIN</td><td>−30% bankroll</td></tr>
+        </table>
+        <div class="htip"><strong>Losing a boss doesn't end the run.</strong> You take a 30% penalty and the run continues. You can lose the level 5 boss and still win the game.</div>
+        <div class="hgold"><strong>Cards carry into boss fights.</strong> Stage Bluff or Sure Thing before answering a boss question — it applies exactly like a normal round. The Fixer joker also works here.</div>
+      </div>
+
+    </div><!-- /.help-body -->
+  </div><!-- /.help-modal -->
+</div><!-- /#help-overlay -->
+
 <!-- ══════════════ SCRIPTS (order matters) ══════════════ -->
 <script src="js/data.js"></script>
 <script src="js/utils.js"></script>
@@ -873,6 +1210,7 @@ body::after {
 <script src="js/shop.js"></script>
 <script src="js/boss.js"></script>
 <script src="js/game.js"></script>
+<script src="js/help.js"></script>
 
 </body>
 </html>
