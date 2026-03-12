@@ -89,7 +89,7 @@ const Broadcast = {
     if (liveTxt) liveTxt.textContent = b.n.toUpperCase();
     // Show bankroll remaining after wager deduction, with a label
     const brEl    = $('bc-room-br');
-    const brLblEl = $('bc-room-br-lbl');
+    const brLblEl = document.querySelector('.bc-room-br-lbl');
     if (brEl) brEl.textContent = fmt(p.bankroll);
     if (brLblEl) brLblEl.textContent = p.bankroll === 0 ? 'ALL IN' : 'BANKROLL';
 

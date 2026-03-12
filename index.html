@@ -910,20 +910,48 @@ body::after {
 
 /* ── MOBILE OVERRIDES ── */
 @media (max-width: 600px) {
-  .bc-room { height: clamp(140px, 32vh, 200px); }
-  .bc-tv-canvas { width: clamp(140px, 55vw, 220px) !important; height: auto !important; }
-  .bc-col-log { display: none; } /* hide log on small screens — visible in right col */
-  .bc-col-right { width: 38%; }
-  .bc-col-mid { min-width: 0; }
+  /* Sim screen: allow full scroll on mobile — content is taller than viewport */
+  #s-sim {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  .bc-room {
+    height: clamp(130px, 30vh, 180px);
+    flex-shrink: 0;
+  }
+  .bc-tv-canvas { width: clamp(130px, 50vw, 200px) !important; height: auto !important; }
+  /* Stack columns vertically on mobile */
+  .bc-data {
+    flex-direction: column !important;
+    overflow-y: visible !important;
+    min-height: 0;
+    flex-shrink: 0;
+  }
+  .bc-col-log { display: none; } /* commentary visible in right col on mobile */
+  .bc-col-mid {
+    width: 100% !important;
+    min-width: 0;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+  }
+  .bc-col-right {
+    width: 100% !important;
+    min-width: 0;
+    border-top: none;
+  }
   .bc-room-bankroll { padding: 4px 8px; }
   .bc-room-br-val { font-size: clamp(10px,3vw,12px); }
-  .bc-data { min-height: 200px; }
   .bc-sv { font-size: clamp(10px,3vw,13px); }
   .bc-crowd-total { font-size: clamp(12px,4vw,16px); }
+  .bc-interrupt { position: static !important; }
+  /* Momentum bar full width */
+  .bc-mom-track { height: 18px; }
+  /* Ticker stays at bottom */
+  .bc-ticker { flex-shrink: 0; }
 }
 @media (max-width: 400px) {
-  .bc-col-right { display: none; }  /* stack: just centre on tiny phones */
-  .bc-col-mid { width: 100%; }
+  .bc-room { height: clamp(110px, 28vh, 160px); }
+  .bc-tv-canvas { width: clamp(110px, 44vw, 160px) !important; }
 }
 .bc-ticker-inner {
   display: inline-block; white-space: nowrap;
@@ -1367,32 +1395,6 @@ body.shake { animation: shake 0.5s ease; }
 .sprv-tag   { font-size: 8px; letter-spacing: 2px; padding: 2px 8px; }
 .sprv-close { font-size: 9px; padding: 6px 14px; margin-top: 4px; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text); font-family: 'Press Start 2P', monospace; }
 
-/* Debug panel */
-#debug-panel {
-  display: none;
-  position: fixed; bottom: 0; left: 0; z-index: 9000;
-  background: rgba(2,6,14,.96); border: 1px solid var(--cyan);
-  border-left: none; border-bottom: none;
-  padding: 10px 14px; max-width: 280px; width: 90%;
-}
-.dbg-title { font-size: 8px; color: var(--cyan); margin-bottom: 8px; letter-spacing: 2px; }
-.dbg-row   { font-size: 9px; color: var(--dim); font-family:'Share Tech Mono',monospace; padding: 2px 0; }
-.dbg-row b { color: var(--text); }
-.dbg-btn   {
-  font-family: 'Press Start 2P', monospace; font-size: 7px;
-  background: var(--bg3); border: 1px solid var(--border);
-  color: var(--dim); padding: 4px 8px; margin: 3px 2px 0 0;
-  cursor: pointer;
-}
-.dbg-btn:hover { border-color: var(--cyan); color: var(--cyan); }
-#dbg-toggle {
-  position: fixed; bottom: 0; left: 0; z-index: 9001;
-  font-family: 'Press Start 2P', monospace; font-size: 7px;
-  background: rgba(2,6,14,.8); border: 1px solid var(--border);
-  border-left: none; border-bottom: none;
-  color: var(--dim); padding: 4px 8px; cursor: pointer;
-}
-#dbg-toggle:hover { color: var(--cyan); border-color: var(--cyan); }
 
 /* ══════════════════════════════════════════════
    RESPONSIVE OVERRIDES
@@ -1749,13 +1751,6 @@ body.shake { animation: shake 0.5s ease; }
   <button class="btn btn-cyan" onclick="G.restart()">🏆 PLAY AGAIN</button>
 </div>
 
-<!-- ══════════════ DEBUG PANEL ══════════════ -->
-<button id="dbg-toggle" onclick="G.toggleDebug()">🐛 DBG</button>
-<div id="debug-panel">
-  <div class="dbg-title">🐛 DEBUG MODE</div>
-  <div id="dbg-content"></div>
-</div>
-
 <!-- ══════════════ CHARACTER STATS MODAL ══════════════ -->
 <div id="cstats-overlay" onclick="if(event.target===this)CharStats.close()">
   <div class="cstats-modal">
@@ -1779,6 +1774,7 @@ body.shake { animation: shake 0.5s ease; }
 
     <div class="help-titlebar">
       <div class="help-title">📖 HOW TO PLAY</div>
+      <button class="tut-replay-help" onclick="Tutorial.replay()" title="Replay the interactive tutorial">▶ TUTORIAL</button>
       <button class="help-close" onclick="Help.close()">✕ CLOSE</button>
     </div>
 
@@ -1999,6 +1995,7 @@ body.shake { animation: shake 0.5s ease; }
 <script src="js/game.js"></script>
 <script src="js/charstats.js"></script>
 <script src="js/help.js"></script>
+<script src="js/tutorial.js"></script>
 <script src="js/savegame.js"></script>
 
 <!-- ══ FORFEIT OVERLAY ══ -->
