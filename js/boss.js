@@ -130,6 +130,7 @@ const Boss = {
         G._fixerUsed = false;
         Shop.generate(G);
         Render.shop(G);
+        SaveGame.save(G); // save after boss victory
         screen('shop');
       }, 1500);
     }

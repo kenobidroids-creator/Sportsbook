@@ -16,6 +16,7 @@ const G = {
   nav(s) {
     SFX.click();
     if (s === 'charselect') Render.charSelect(this);
+    if (s === 'title') { Stats.renderTitle(); SaveGame.showContinuePrompt(this); }
     screen(s);
   },
 
@@ -150,7 +151,7 @@ const G = {
   genBets(n) {
     const p = this.p;
     let pool = shuffle(BETS);
-    return pool.slice(0, n).map(t => {
+    const bets = pool.slice(0, n).map(t => {
       const b = { ...t };
 
       // Resolve UNKNOWN odds
@@ -172,6 +173,18 @@ const G = {
 
       return b;
     });
+
+    // Featured event: flag one eligible bet per level (levels 2+)
+    if (p.lvl >= 2) {
+      const eligible = bets.filter(b => b.featuredEligible);
+      if (eligible.length > 0) {
+        const feat = eligible[Math.floor(Math.random() * eligible.length)];
+        feat.featured = true;
+        feat.odds     = +(feat.odds * 1.3).toFixed(1); // better odds for featured
+      }
+    }
+
+    return bets;
   },
 
   // ─────────────────────────────────────────────
@@ -283,6 +296,7 @@ const G = {
   afterPayout() {
     SFX.click();
     const p = this.p;
+    SaveGame.save(this);
 
     // Dead?
     if (p.bankroll <= 0) {
@@ -336,8 +350,17 @@ const G = {
     Shop.reroll(this);
   },
 
+  sellCard(idx) {
+    Shop.sellCard(idx, this);
+  },
+
+  sellJoker(idx) {
+    Shop.sellJoker(idx, this);
+  },
+
   leaveShop() {
     SFX.click();
+    SaveGame.save(this);
     this.startLevel();
   },
 
@@ -393,6 +416,8 @@ const G = {
   // ─────────────────────────────────────────────
   gameOver(reason) {
     SFX.loss();
+    SaveGame.clear();
+    Stats.record(this, false);
     $('over-sub').textContent = reason;
     Render.statsBox('over-stats', this);
     screen('over');
@@ -400,6 +425,8 @@ const G = {
 
   winGame() {
     SFX.bigwin();
+    SaveGame.clear();
+    Stats.record(this, true);
     coins(window.innerWidth / 2, window.innerHeight / 3, 22);
     $('win-sub').textContent = `${ARCHETYPES[this.p.arch].name} — Walked out with ${fmt(this.p.bankroll)}`;
     Render.statsBox('win-stats', this);
@@ -408,13 +435,15 @@ const G = {
 
   restart() {
     SFX.click();
+    SaveGame.clear();
     this.p          = null;
     this._arch      = null;
     this._boss      = null;
     this._shop      = { cards: [], jokers: [], sold: new Set(), rc: 10 };
     this._rrcount   = 0;
     this._fixerUsed = false;
-    this.nav('charselect');
+    Stats.renderTitle();
+    screen('title');
   },
 
   // ─────────────────────────────────────────────
@@ -422,5 +451,51 @@ const G = {
   // ─────────────────────────────────────────────
   showToast(msg, cls) {
     showToast(msg, cls);
+  },
+
+  // ─────────────────────────────────────────────
+  //  DEBUG MODE
+  // ─────────────────────────────────────────────
+  _debug: false,
+
+  toggleDebug() {
+    this._debug = !this._debug;
+    const el = $('debug-panel');
+    if (el) el.style.display = this._debug ? 'block' : 'none';
+    if (this._debug) this.refreshDebug();
+  },
+
+  refreshDebug() {
+    if (!this._debug || !this.p) return;
+    const p   = this.p;
+    const ante = ANTES[p.lvl] || 0;
+    const gap  = ante > 0 ? ante - p.bankroll : 0;
+    $('dbg-content').innerHTML = `
+      <div class="dbg-row"><b>Arch</b> ${p.arch}</div>
+      <div class="dbg-row"><b>Level</b> ${p.lvl} · Round ${p.ril + 1}/3</div>
+      <div class="dbg-row"><b>Bankroll</b> ${fmt(p.bankroll)}</div>
+      <div class="dbg-row"><b>Ante</b> ${ante > 0 ? fmt(ante) : 'BOSS'} ${gap > 0 ? '<span style="color:var(--red)">NEED '+fmt(gap)+'</span>' : '<span style="color:var(--green)">✓ MET</span>'}</div>
+      <div class="dbg-row"><b>Heat</b> ${p.heat} · <b>Luck</b> ${p.luck}</div>
+      <div class="dbg-row"><b>Jokers</b> ${p.jokers.join(', ') || '—'}</div>
+      <div class="dbg-row"><b>Hand</b> ${p.hand.join(', ') || '—'}</div>
+      <div class="dbg-row"><b>W/L</b> ${p.bw}/${p.bl} · <b>Streak</b> ${p.wins}</div>
+      <div class="dbg-row"><b>Win chance (last)</b> ${p.lastRes ? p.lastRes.ch + '%' : '—'}</div>
+      <hr style="border-color:var(--border);margin:4px 0">
+      <button class="dbg-btn" onclick="G._cheat('money')">+$200</button>
+      <button class="dbg-btn" onclick="G._cheat('luck')">+2 Luck</button>
+      <button class="dbg-btn" onclick="G._cheat('heat0')">Heat → 0</button>
+      <button class="dbg-btn" onclick="G._cheat('nextlvl')">Next Level →</button>`;
+  },
+
+  _cheat(cmd) {
+    if (!this.p) return;
+    const p = this.p;
+    if (cmd === 'money')   { p.bankroll += 200; showToast('🐛 +$200', 'ti'); }
+    if (cmd === 'luck')    { p.luck = Math.min(10, p.luck + 2); showToast('🐛 +2 Luck', 'ti'); }
+    if (cmd === 'heat0')   { p.heat = 0; showToast('🐛 Heat zeroed', 'ti'); }
+    if (cmd === 'nextlvl') { p.lvl++; p.ril = 0; this.startLevel(); }
+    this.refreshDebug();
+    // Re-render current screen if on betting board
+    if ($('s-bet')?.classList.contains('active')) Render.bettingBoard(this);
   },
 };
