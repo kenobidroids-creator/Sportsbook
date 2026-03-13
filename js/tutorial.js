@@ -585,13 +585,14 @@ const Tutorial = {
     };
 
     // Sim resolve: force win + advance to payout
+    // Must accept all 4 args and pass them through
     T._origMethods.simResolve = Sim.resolve.bind(Sim);
-    Sim.resolve = function(gRef) {
+    Sim.resolve = function(gRef, preRes, preCh, intChoice) {
       if (T.active && T._guaranteeWin) {
         gRef.p._tutForceWin = true;
         T._guaranteeWin = false;
       }
-      T._origMethods.simResolve(gRef);
+      T._origMethods.simResolve(gRef, preRes, preCh, intChoice);
       if (T.active && T.step === 8) setTimeout(() => T.next(), 300);
     };
 

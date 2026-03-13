@@ -7,7 +7,7 @@ const ARCHETYPES = {
     name: "THE DEGENERATE",
     icon: "🎰",
     bio: "High impulse, no strategy.\nLives for the thrill of the longshot.",
-    bankroll: 75,
+    bankroll: 100,
     luck: 1,
     cred: 100,
     cards: ['free_parlay', 'double_down'],
@@ -21,7 +21,7 @@ const ARCHETYPES = {
     name: "THE MATH WHIZ",
     icon: "🧮",
     bio: "Calculated, cold. Never bets without\nknowing the expected value.",
-    bankroll: 300,
+    bankroll: 220,
     luck: 4,
     cred: 200,
     cards: ['inside_info', 'sure_thing'],
@@ -49,13 +49,13 @@ const ARCHETYPES = {
 
 // ── BETS ─────────────────────────────────────────
 const BETS = [
-  { id: 'pigeon',   n: "Pigeon Race",         ico: "🐦",  desc: "City pigeons. Not rigged. Probably.", odds: 2.0, win: 52, risk: "LOW"     },
+  { id: 'pigeon',   n: "Pigeon Race",         ico: "🐦",  desc: "City pigeons. Not rigged. Probably.", odds: 2.0, win: 52, risk: "LOW",  featuredEligible: true },
   { id: 'snail',    n: "Snail Derby",          ico: "🐌",  desc: "Underground circuit. Salt available.", odds: 5.0, win: 18, risk: "HIGH"    },
-  { id: 'robot',    n: "Robot Boxing",         ico: "🤖",  desc: "Automated fists. Real stakes.",       odds: 1.5, win: 60, risk: "LOW"     },
+  { id: 'robot',    n: "Robot Boxing",         ico: "🤖",  desc: "Automated fists. Real stakes.",       odds: 1.5, win: 60, risk: "LOW",  featuredEligible: true },
   { id: 'cook',     n: "Cooking Contest",      ico: "👨‍🍳", desc: "Gordon vs. the underdog.",           odds: 3.0, win: 34, risk: "MED"     },
   { id: 'myst',     n: "Mystery Matchup",      ico: "❓",  desc: "Even we don't know. Sign here.",     odds: 0,   win: 0,  risk: "UNKNOWN"  },
   { id: 'eat',      n: "Competitive Eating",   ico: "🍔",  desc: "Hot dog champ. Ref is bribed.",      odds: 2.5, win: 41, risk: "MED"     },
-  { id: 'chess',    n: "Underground Chess",    ico: "♟️",  desc: "Speed chess. Physical stakes.",      odds: 4.0, win: 24, risk: "HIGH"    },
+  { id: 'chess',    n: "Underground Chess",    ico: "♟️",  desc: "Speed chess. Physical stakes.",      odds: 4.0, win: 24, risk: "HIGH",  featuredEligible: true },
   { id: 'crick',    n: "Cyber Cricket",        ico: "🦗",  desc: "AI-enhanced insect athletics.",      odds: 3.5, win: 28, risk: "MED"     },
   { id: 'dign',     n: "Wager Your Dignity",   ico: "😤",  desc: "You don't need it. Risk: self-worth.", odds: 1.2, win: 66, risk: "DIGNITY" },
   { id: 'glad',     n: "Gladiator Snails",     ico: "🏟️", desc: "Rome wasn't built in a day.",        odds: 8.0, win: 11, risk: "EXTREME" },
@@ -383,4 +383,138 @@ const COMMENTS = {
   "🐻": ["Bear market analysts are sweating.", "Hedge fund manager eliminated in round 2.", "Volatility! Everything is on fire!", "The bear just shorted its opponent."],
   "🐝": ["Contestant #3 has 47 stings and counting.", "The bees appear to have chosen a side.", "Officials attempt to call a timeout. Bees disagree.", "The beekeeper crowd goes absolutely wild."],
   "🦀": ["SIDEWAYS ATHLETICISM! Unprecedented!", "Crab #7 going diagonally to glory!", "The other crabs are rave-dancing?", "Fastest sideways 40-yard dash ever recorded."],
+};
+
+// ── BROADCAST PHASES ─────────────────────────────
+// Per-event commentary for each simulation phase.
+// open: shown at event start (random pick)
+// mid_w / mid_l: cycling during mid-phase (player winning / losing in momentum)
+// close_w / close_l: final stretch commentary
+const PHASES = {
+  "🐦": {
+    open:    ["GATES OPEN — the pigeons are AIRBORNE!", "City birds. Sky high stakes. Let's GO.", "Lane assignments confirmed. Your pick is in lane 2."],
+    mid_w:   ["YOUR BIRD is pulling clear of the pack!", "Gap widening — the crowd ERUPTS!", "Incredible form. Clean air. Coming through FAST."],
+    mid_l:   ["The pack is pulling away...", "Your pigeon stopped to eat something. MOVE IT!", "Losing ground in the back third. Not ideal."],
+    close_w: ["FINAL STRETCH — YOUR BIRD IN FRONT — COME ON—",],
+    close_l: ["Closing in on the finish. This isn't looking good.",],
+  },
+  "🐌": {
+    open:    ["They're off. Technically.", "The snails have begun to accelerate. Slowly.", "Race officials confirm: movement has occurred."],
+    mid_w:   ["YOUR SNAIL is... ahead? Actually ahead.", "Remarkable. Your snail hasn't stopped once.", "The competition is struggling. Your pick glides."],
+    mid_l:   ["Your snail appears to be napping.", "Momentum reversed. Your snail took a left turn.", "Officials checking if your snail is still alive."],
+    close_w: ["PHOTO FINISH TERRITORY — your snail inching forward—",],
+    close_l: ["The end approaches. Your snail is not at it.",],
+  },
+  "🤖": {
+    open:    ["BELL RINGS — circuits engaged — FIGHT!", "Robots enter the ring. Crowd goes silent.", "Power levels: maximum. Objective: destroy opponent."],
+    mid_w:   ["YOUR BOT lands a BRUTAL haymaker — sparks flying!", "Opponent staggering — your robot is DOMINANT!", "Oil leak on opponent unit — critical damage!"],
+    mid_l:   ["Your robot took a hit it did NOT recover from.", "Error 404: Dodge Not Found. On your unit.", "Your bot is in pieces. Metaphorically. Actually literally."],
+    close_w: ["FINAL ROUND — YOUR ROBOT IS UP ON POINTS—",],
+    close_l: ["The judges are tallying. You already know.",],
+  },
+  "👨‍🍳": {
+    open:    ["Aprons on. Knives out. The clock is running.", "Gordon looks nervous. Your pick looks focused.", "Judges seated. Score cards ready. This is it."],
+    mid_w:   ["PERFECT plating — judges are WEEPING with joy!", "The flavour profile. Immaculate. Unprecedented.", "A standing ovation from the prep station. Remarkable."],
+    mid_l:   ["The soufflé has... deflated.", "Judges exchanging concerned looks. Not good.", "Burning smell detected from your station. Very not good."],
+    close_w: ["FINAL JUDGING — the crowd holds its breath—",],
+    close_l: ["The presentation round is not going in your favour.",],
+  },
+  "🍔": {
+    open:    ["BUZZER SOUNDS — they're eating!", "45 hot dogs on the table. One minute on the clock.", "The crowd is chanting. The competitors are focused. This is sport."],
+    mid_w:   ["YOUR CHAMP is at hot dog #38 — RECORD PACE!", "The competition can't keep up — gap is WIDENING!", "The crowd losing its mind. Absolutely clinical eating."],
+    mid_l:   ["Your competitor just hit dog #41. Your pick is behind.", "Pace has fallen off. The mustard is not helping.", "Medical team on standby. For your champ. That's bad."],
+    close_w: ["FINAL COUNTDOWN — YOUR PICK LEADING BY 6 DOGS—",],
+    close_l: ["The clock is running out. The hot dogs are not helping.",],
+  },
+  "♟️": {
+    open:    ["CLOCKS SET — speed chess commences — 0.4 seconds per move!", "Two grandmasters. One board. Infinite grudges.", "The pieces are set. The violence is implied."],
+    mid_w:   ["YOUR PLAYER sacrifices a queen — GENIUS MOVE!", "The opponent is visibly panicking. Beautiful.", "Three moves from checkmate. You can feel it."],
+    mid_l:   ["A critical blunder on move 7. Catastrophic.", "Your player stared at a pawn for 3 whole seconds. Costly.", "The board has turned. Irrevocably."],
+    close_w: ["ENDGAME — your player has a decisive advantage—",],
+    close_l: ["The position is lost. The player is debating flipping the board.",],
+  },
+  "🦗": {
+    open:    ["Cyber-crickets calibrated. Track electrified. Go.", "AI-enhanced mandibles ready. Bionic legs: engaged.", "The starting grid of insects. This is completely normal."],
+    mid_w:   ["YOUR CRICKET is clicking at MAXIMUM velocity!", "Bionic legs of #4 are operating perfectly — SURGE!", "Pulling away from the pack — the algorithm is working!"],
+    mid_l:   ["Your cricket chewed through the sensor wire.", "The AI module appears to have recommended a nap.", "Falling behind the field. Firmware update needed."],
+    close_w: ["FINAL CIRCUIT — your cricket is in the lead—",],
+    close_l: ["The finish line is close. Your cricket is not.",],
+  },
+  "❓": {
+    open:    ["Something has started happening.", "Officials confirm: the event is occurring.", "We have begun. What we have begun is unclear."],
+    mid_w:   ["Based on nothing, you appear to be winning.", "Something has gone in your favour. Somehow.", "Your investment in the unknown is paying off. Maybe."],
+    mid_l:   ["Things appear to be going against you. In some way.", "Momentum has shifted toward the other thing.", "You have no idea what's happening. Neither do we."],
+    close_w: ["APPROACHING CONCLUSION — signals are positive—",],
+    close_l: ["Whatever this was, it isn't going your way.",],
+  },
+  "😤": {
+    open:    ["The dignity scales are calibrated. Stakes: self-worth.", "Judges assessing composure, poise, and social standing.", "Round 1 of 3. Your dignity enters the ring."],
+    mid_w:   ["Composed. Unbothered. Your dignity is INTACT!", "The judges nod approvingly. Rare. Valuable.", "Someone in the crowd respects you. First time today."],
+    mid_l:   ["A pigeon has landed on your shoulder. Judgementally.", "Your name was mispronounced. Three times. Intentionally.", "The crowd is... tittering. That's bad."],
+    close_w: ["FINAL ASSESSMENT — your dignity holding strong—",],
+    close_l: ["The judges look away. That's never a good sign.",],
+  },
+  "🏟️": {
+    open:    ["Two snails. One arena. Infinite menace.", "The gladiator snails circle each other. Slowly. Ominously.", "The crowd woke up for this. Barely."],
+    mid_w:   ["YOUR SNAIL produced a tiny shield — TACTICAL GENIUS!", "Shell-to-shell combat — your pick is DOMINATING!", "The crowd woke up. They're into this. Somehow."],
+    mid_l:   ["Your snail retreated into its shell. Strategically cowardly.", "The opponent snail is on the offensive. Aggressively so.", "Slime trail analysis: you are losing."],
+    close_w: ["FINAL CLASH — shells locked — your snail pushing forward—",],
+    close_l: ["The gladiatorial outcome is becoming apparent.",],
+  },
+  "🦆": {
+    open:    ["Ducks positioned. Pins standing. Bowl.", "The lane has been de-feathered. Mostly.", "The duck-bowling association welcomes you. Don't ask questions."],
+    mid_w:   ["STRIKE! The ducks are INCENSED!", "Your bowler is ON FIRE — perfect form!", "Second frame: even better. The ducks stage a protest."],
+    mid_l:   ["Gutter ball. The ducks are delighted.", "Your bowler slipped. On a duck. Somehow.", "A duck stole the ball. Officials are consulting the rulebook."],
+    close_w: ["FINAL FRAME — leading the scorecard—",],
+    close_l: ["The scorecard is not in your favour. The ducks are pleased.",],
+  },
+  "🐾": {
+    open:    ["FERRETS RELEASED — they're MOVING!", "These ferrets have been caffeinated. All of them.", "Starting gun fired. The ferrets ignored it. Then ran anyway."],
+    mid_w:   ["YOUR FERRET is UNCATCHABLE — maximum ferret velocity!", "Pulling away from the pack. No one can match this pace.", "The ferret found an optimal line. Incredibly."],
+    mid_l:   ["Your ferret went the wrong way. Confidently.", "Ferret #3 is overtaking. Your pick is touring the stands.", "Someone's ferret escaped. It was yours."],
+    close_w: ["FINAL METRES — your ferret is in the lead—",],
+    close_l: ["The finish line. Your ferret hasn't seen it.",],
+  },
+  "🦙": {
+    open:    ["The llama approaches the podium. Confidently.", "Round 1: PRESTIDIGITATION. The crowd gasps.", "The spelling bee begins. The llama looks ready."],
+    mid_w:   ["CORRECT! The llama NAILED it! Judges stunned!", "Your llama spells ONOMATOPOEIA flawlessly. FLAWLESSLY.", "The audience is SILENT in awe. Your llama: focused."],
+    mid_l:   ["The llama has been distracted by a shiny object.", "A misspelling. Contested. Also wrong.", "The judges are shaking their heads. The llama doesn't care."],
+    close_w: ["CHAMPIONSHIP WORD — your llama steps forward—",],
+    close_l: ["Final word incoming. The llama looks confused.",],
+  },
+  "🐟": {
+    open:    ["The fish approach the starting platform. Defiantly.", "Judges in place. Physics: suspended briefly.", "Fish parkour. Officially a sport. Right now."],
+    mid_w:   ["YOUR FISH is AIRBORNE — cleared a 4-metre barrier!", "Bioluminescent fins: ENGAGED — it's magnificent!", "The fish has no respect for gravity. Beautiful."],
+    mid_l:   ["Your fish attempted a wall run. Immediately fell.", "Gravity reasserted itself. Onto your fish.", "The fish looked at the obstacle and chose not to."],
+    close_w: ["FINAL OBSTACLE — your fish lines up the approach—",],
+    close_l: ["The fish parkour course. Your fish: not completing it.",],
+  },
+  "🎡": {
+    open:    ["The wheel is set in motion...", "Sectors mapped. Fate: randomised.", "The Wheel of Misfortune turns. As it does."],
+    mid_w:   ["It's slowing... hovering near your sector!", "The pointer is wavering. Right where you need it.", "Coming to rest... right there... hold on..."],
+    mid_l:   ["The pointer is drifting... away from where you need it.", "It's slowing in entirely the wrong sector.", "The wheel mocks you. Visibly."],
+    close_w: ["ALMOST STOPPED — right on the edge of your sector—",],
+    close_l: ["Final rotations. Not looking lucky.",],
+  },
+  "🐻": {
+    open:    ["Trading floor opens. Bear vs Bull: the grudge match.", "Market forces squared up. Volatility: extreme.", "Analysts sweating. Positions entered. God help you."],
+    mid_w:   ["YOUR POSITION is UP — the bears are RETREATING!", "Bull run confirmed — your call was right!", "Portfolio in the green. The crowd of analysts STUNNED."],
+    mid_l:   ["The bear market is asserting dominance.", "Your position is down 40%. On paper. Soon in reality.", "Margin call incoming. The bear laughs."],
+    close_w: ["MARKET CLOSE APPROACHING — you're in positive territory—",],
+    close_l: ["Final bell approaching. The numbers are bad.",],
+  },
+  "🐝": {
+    open:    ["Protective gear: optional. Courage: mandatory.", "The hive has been agitated. Intentionally.", "Sting count begins. The bees have strong opinions."],
+    mid_w:   ["YOUR BEEKEEPER has 47 stings and is STILL GOING!", "The bees have chosen a side. Your side. Painfully.", "Remarkable pain tolerance. The crowd is horrified. In awe."],
+    mid_l:   ["Your beekeeper retreated at sting 12. Amateur.", "The competitor absorbed 60 stings without blinking. Terrifying.", "Medical team mobilised. For your pick. Not great."],
+    close_w: ["FINAL COUNT — your beekeeper still standing—",],
+    close_l: ["The sting count is in. Your contestant: departed.",],
+  },
+  "🦀": {
+    open:    ["The crabs are positioned sideways. As always.", "100-metre sideways sprint. Officially timed.", "The Crab Rave Race begins. The music is already going."],
+    mid_w:   ["YOUR CRAB is going SIDEWAYS TO GLORY!", "The diagonal line is the optimal line — YOUR CRAB FOUND IT!", "Fastest sideways 40-metre ever recorded. Right now. Your crab."],
+    mid_l:   ["Your crab went into the crowd. Sideways. Confidently.", "The competition is pulling away. Also sideways.", "Your crab stopped to rave. This is not that race."],
+    close_w: ["FINAL METRES — your crab cutting a clean diagonal—",],
+    close_l: ["The finish approaches. Your crab is raving somewhere.",],
+  },
 };

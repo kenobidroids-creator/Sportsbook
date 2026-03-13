@@ -16,6 +16,7 @@ const G = {
   nav(s) {
     SFX.click();
     if (s === 'charselect') Render.charSelect(this);
+    if (s === 'title') { Stats.renderTitle(); SaveGame.showContinuePrompt(this); }
     screen(s);
   },
 
@@ -150,7 +151,7 @@ const G = {
   genBets(n) {
     const p = this.p;
     let pool = shuffle(BETS);
-    return pool.slice(0, n).map(t => {
+    const bets = pool.slice(0, n).map(t => {
       const b = { ...t };
 
       // Resolve UNKNOWN odds
@@ -172,6 +173,18 @@ const G = {
 
       return b;
     });
+
+    // Featured event: flag one eligible bet per level (levels 2+)
+    if (p.lvl >= 2) {
+      const eligible = bets.filter(b => b.featuredEligible);
+      if (eligible.length > 0) {
+        const feat = eligible[Math.floor(Math.random() * eligible.length)];
+        feat.featured = true;
+        feat.odds     = +(feat.odds * 1.3).toFixed(1); // better odds for featured
+      }
+    }
+
+    return bets;
   },
 
   // ─────────────────────────────────────────────
@@ -283,6 +296,7 @@ const G = {
   afterPayout() {
     SFX.click();
     const p = this.p;
+    SaveGame.save(this);
 
     // Dead?
     if (p.bankroll <= 0) {
@@ -336,8 +350,17 @@ const G = {
     Shop.reroll(this);
   },
 
+  sellCard(idx) {
+    Shop.sellCard(idx, this);
+  },
+
+  sellJoker(idx) {
+    Shop.sellJoker(idx, this);
+  },
+
   leaveShop() {
     SFX.click();
+    SaveGame.save(this);
     this.startLevel();
   },
 
@@ -393,6 +416,8 @@ const G = {
   // ─────────────────────────────────────────────
   gameOver(reason) {
     SFX.loss();
+    SaveGame.clear();
+    Stats.record(this, false);
     $('over-sub').textContent = reason;
     Render.statsBox('over-stats', this);
     screen('over');
@@ -400,6 +425,8 @@ const G = {
 
   winGame() {
     SFX.bigwin();
+    SaveGame.clear();
+    Stats.record(this, true);
     coins(window.innerWidth / 2, window.innerHeight / 3, 22);
     $('win-sub').textContent = `${ARCHETYPES[this.p.arch].name} — Walked out with ${fmt(this.p.bankroll)}`;
     Render.statsBox('win-stats', this);
@@ -408,13 +435,15 @@ const G = {
 
   restart() {
     SFX.click();
+    SaveGame.clear();
     this.p          = null;
     this._arch      = null;
     this._boss      = null;
     this._shop      = { cards: [], jokers: [], sold: new Set(), rc: 10 };
     this._rrcount   = 0;
     this._fixerUsed = false;
-    this.nav('charselect');
+    Stats.renderTitle();
+    screen('title');
   },
 
   // ─────────────────────────────────────────────
